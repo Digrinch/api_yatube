@@ -24,10 +24,9 @@ class TestPostAPI:
             '`/api/v1/posts/` возвращается ответ со статусом 401.'
         )
 
-    def check_post_data(self,
-                        response_data,
-                        request_method_and_url,
-                        db_post=None):
+    def check_post_data(
+        self, response_data, request_method_and_url, db_post=None
+    ):
         expected_fields = ('id', 'text', 'author', 'pub_date')
         for field in expected_fields:
             assert field in response_data, (
@@ -68,9 +67,7 @@ class TestPostAPI:
         db_post = Post.objects.first()
         test_post = test_data[0]
         self.check_post_data(
-            test_post,
-            'GET-запрос к `/api/v1/posts/`',
-            db_post
+            test_post, 'GET-запрос к `/api/v1/posts/`', db_post
         )
 
     @pytest.mark.django_db(transaction=True)
@@ -148,18 +145,18 @@ class TestPostAPI:
 
         test_data = response.json()
         self.check_post_data(
-            test_data,
-            'GET-запрос к `/api/v1/posts/{id}/`',
-            post
+            test_data, 'GET-запрос к `/api/v1/posts/{id}/`', post
         )
 
     @pytest.mark.django_db(transaction=True)
     @pytest.mark.parametrize('http_method', ('put', 'patch'))
-    def test_post_change_auth_with_valid_data(self, user_client, post,
-                                              http_method):
+    def test_post_change_auth_with_valid_data(
+        self, user_client, post, http_method
+    ):
         request_func = getattr(user_client, http_method)
-        response = request_func(f'/api/v1/posts/{post.id}/',
-                                data=self.VALID_DATA)
+        response = request_func(
+            f'/api/v1/posts/{post.id}/', data=self.VALID_DATA
+        )
         http_method = http_method.upper()
         assert response.status_code == HTTPStatus.OK, (
             f'Проверьте, что для авторизованного пользователя {http_method}'
@@ -180,11 +177,13 @@ class TestPostAPI:
 
     @pytest.mark.django_db(transaction=True)
     @pytest.mark.parametrize('http_method', ('put', 'patch'))
-    def test_post_change_not_auth_with_valid_data(self, client, post,
-                                                  http_method):
+    def test_post_change_not_auth_with_valid_data(
+        self, client, post, http_method
+    ):
         request_func = getattr(client, http_method)
-        response = request_func(f'/api/v1/posts/{post.id}/',
-                                data=self.VALID_DATA)
+        response = request_func(
+            f'/api/v1/posts/{post.id}/', data=self.VALID_DATA
+        )
         http_method = http_method.upper()
         assert response.status_code == HTTPStatus.UNAUTHORIZED, (
             f'Проверьте, что {http_method}-запрос неавторизованного '
@@ -200,11 +199,13 @@ class TestPostAPI:
 
     @pytest.mark.django_db(transaction=True)
     @pytest.mark.parametrize('http_method', ('put', 'patch'))
-    def test_post_change_not_author_with_valid_data(self, user_client,
-                                                    another_post, http_method):
+    def test_post_change_not_author_with_valid_data(
+        self, user_client, another_post, http_method
+    ):
         request_func = getattr(user_client, http_method)
-        response = request_func(f'/api/v1/posts/{another_post.id}/',
-                                data=self.VALID_DATA)
+        response = request_func(
+            f'/api/v1/posts/{another_post.id}/', data=self.VALID_DATA
+        )
         http_method = http_method.upper()
         assert response.status_code == HTTPStatus.FORBIDDEN, (
             f'Проверьте, что {http_method}'
@@ -221,12 +222,13 @@ class TestPostAPI:
 
     @pytest.mark.django_db(transaction=True)
     @pytest.mark.parametrize('http_method', ('put', 'patch'))
-    def test_post_patch_auth_with_invalid_data(self, user_client, post,
-                                               http_method):
+    def test_post_patch_auth_with_invalid_data(
+        self, user_client, post, http_method
+    ):
         request_func = getattr(user_client, http_method)
-        response = request_func(f'/api/v1/posts/{post.id}/',
-                                data={'text': {}},
-                                format='json')
+        response = request_func(
+            f'/api/v1/posts/{post.id}/', data={'text': {}}, format='json'
+        )
         assert response.status_code == HTTPStatus.BAD_REQUEST, (
             f'Проверьте, что {http_method}'
             '-запрос с некорректными данными от авторизованного пользователя '

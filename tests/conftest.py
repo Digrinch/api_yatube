@@ -9,9 +9,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 root_dir_content = os.listdir(BASE_DIR)
 PROJECT_DIR_NAME = 'yatube_api'
 
-if (
-        PROJECT_DIR_NAME not in root_dir_content
-        or not os.path.isdir(os.path.join(BASE_DIR, PROJECT_DIR_NAME))
+if PROJECT_DIR_NAME not in root_dir_content or not os.path.isdir(
+    os.path.join(BASE_DIR, PROJECT_DIR_NAME)
 ):
     raise AssertionError(
         f'В директории `{BASE_DIR}` не найдена папка c проектом '

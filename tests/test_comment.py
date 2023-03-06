@@ -23,10 +23,9 @@ class TestCommentAPI:
             'статусом 401.'
         )
 
-    def check_comment_data(self,
-                           response_data,
-                           request_method_and_url,
-                           db_comment=None):
+    def check_comment_data(
+        self, response_data, request_method_and_url, db_comment=None
+    ):
         expected_fields = ('id', 'text', 'author', 'post', 'created')
         for field in expected_fields:
             assert field in response_data, (
@@ -47,8 +46,14 @@ class TestCommentAPI:
             )
 
     @pytest.mark.django_db(transaction=True)
-    def test_comments_get(self, user_client, post, comment_1_post,
-                          comment_2_post, comment_1_another_post):
+    def test_comments_get(
+        self,
+        user_client,
+        post,
+        comment_1_post,
+        comment_2_post,
+        comment_1_another_post,
+    ):
         response = user_client.get(f'/api/v1/posts/{post.id}/comments/')
         assert response.status_code == HTTPStatus.OK, (
             'Проверьте, что при GET-запросе авторизованного пользователя к '
@@ -72,19 +77,19 @@ class TestCommentAPI:
         self.check_comment_data(
             test_comment,
             'GET-запрос к `/api/v1/posts/{post.id}/comments/`',
-            db_comment=comment
+            db_comment=comment,
         )
 
     @pytest.mark.django_db(transaction=True)
-    def test_comments_post_auth_with_valid_data(self, user_client, post,
-                                                user, another_user):
+    def test_comments_post_auth_with_valid_data(
+        self, user_client, post, user, another_user
+    ):
         comments_count = Comment.objects.count()
         data = {
             'text': self.TEXT_FOR_COMMENT,
         }
         response = user_client.post(
-            f'/api/v1/posts/{post.id}/comments/',
-            data=data
+            f'/api/v1/posts/{post.id}/comments/', data=data
         )
         assert response.status_code == HTTPStatus.CREATED, (
             'Проверьте, что POST-запрос с корректными данными от '
@@ -105,8 +110,7 @@ class TestCommentAPI:
             'содержащий текст нового комментария в неизменном виде.'
         )
         self.check_comment_data(
-            test_data,
-            'POST-запрос к `/api/v1/posts/{post.id}/comments/`'
+            test_data, 'POST-запрос к `/api/v1/posts/{post.id}/comments/`'
         )
 
         assert test_data.get('author') == user.username, (
@@ -126,8 +130,7 @@ class TestCommentAPI:
         comments_count = Comment.objects.count()
 
         response = user_client.post(
-            f'/api/v1/posts/{post.id}/comments/',
-            data={}
+            f'/api/v1/posts/{post.id}/comments/', data={}
         )
         assert response.status_code == HTTPStatus.BAD_REQUEST, (
             'Проверьте, что POST-запрос с некорректными данными от '
@@ -143,8 +146,7 @@ class TestCommentAPI:
 
     def test_comment_author_and_post_are_read_only(self, user_client, post):
         response = user_client.post(
-            f'/api/v1/posts/{post.id}/comments/',
-            data={}
+            f'/api/v1/posts/{post.id}/comments/', data={}
         )
         assert response.status_code == HTTPStatus.BAD_REQUEST, (
             'Проверьте, что POST-запрос с некорректными данными от '
@@ -158,7 +160,6 @@ class TestCommentAPI:
             '`/api/v1/posts/{post.id}/comments/` для полей `author` и `post` '
             'установлен свойство "Только для чтения"'
         )
-
 
     def test_comments_id_available(self, user_client, post, comment_1_post):
         response = user_client.get(
@@ -179,8 +180,9 @@ class TestCommentAPI:
             'ответ со статусом 401.'
         )
 
-    def test_comment_id_auth_get(self, user_client, post,
-                                 comment_1_post, user):
+    def test_comment_id_auth_get(
+        self, user_client, post, comment_1_post, user
+    ):
         response = user_client.get(
             f'/api/v1/posts/{post.id}/comments/{comment_1_post.id}/'
         )
@@ -208,16 +210,13 @@ class TestCommentAPI:
 
     @pytest.mark.django_db(transaction=True)
     @pytest.mark.parametrize('http_method', ('put', 'patch'))
-    def test_comment_change_by_auth_with_valid_data(self,
-                                                    user_client,
-                                                    post,
-                                                    comment_1_post,
-                                                    comment_2_post,
-                                                    http_method):
+    def test_comment_change_by_auth_with_valid_data(
+        self, user_client, post, comment_1_post, comment_2_post, http_method
+    ):
         request_func = getattr(user_client, http_method)
         response = request_func(
             f'/api/v1/posts/{post.id}/comments/{comment_1_post.id}/',
-            data={'text': self.TEXT_FOR_COMMENT}
+            data={'text': self.TEXT_FOR_COMMENT},
         )
         http_method = http_method.upper()
         assert response.status_code == HTTPStatus.OK, (
@@ -244,20 +243,18 @@ class TestCommentAPI:
                 f'{http_method} -запрос к '
                 '`/api/v1/posts/{post.id}/comments/{comment.id}/`'
             ),
-            db_comment=db_comment
+            db_comment=db_comment,
         )
 
     @pytest.mark.django_db(transaction=True)
     @pytest.mark.parametrize('http_method', ('put', 'patch'))
-    def test_comment_change_by_not_author_with_valid_data(self,
-                                                          user_client,
-                                                          post,
-                                                          comment_2_post,
-                                                          http_method):
+    def test_comment_change_by_not_author_with_valid_data(
+        self, user_client, post, comment_2_post, http_method
+    ):
         request_func = getattr(user_client, http_method)
         response = request_func(
             f'/api/v1/posts/{post.id}/comments/{comment_2_post.id}/',
-            data={'text': self.TEXT_FOR_COMMENT}
+            data={'text': self.TEXT_FOR_COMMENT},
         )
         http_method = http_method.upper()
         assert response.status_code == HTTPStatus.FORBIDDEN, (
@@ -275,15 +272,13 @@ class TestCommentAPI:
 
     @pytest.mark.django_db(transaction=True)
     @pytest.mark.parametrize('http_method', ('put', 'patch'))
-    def test_comment_change_not_auth_with_valid_data(self,
-                                                     client,
-                                                     post,
-                                                     comment_1_post,
-                                                     http_method):
+    def test_comment_change_not_auth_with_valid_data(
+        self, client, post, comment_1_post, http_method
+    ):
         request_func = getattr(client, http_method)
         response = request_func(
             f'/api/v1/posts/{post.id}/comments/{comment_1_post.id}/',
-            data={'text': self.TEXT_FOR_COMMENT}
+            data={'text': self.TEXT_FOR_COMMENT},
         )
         http_method = http_method.upper()
         assert response.status_code == HTTPStatus.UNAUTHORIZED, (
@@ -299,8 +294,7 @@ class TestCommentAPI:
         )
 
     @pytest.mark.django_db(transaction=True)
-    def test_comment_delete_by_author(self, user_client,
-                                      post, comment_1_post):
+    def test_comment_delete_by_author(self, user_client, post, comment_1_post):
         response = user_client.delete(
             f'/api/v1/posts/{post.id}/comments/{comment_1_post.id}/'
         )
@@ -318,8 +312,7 @@ class TestCommentAPI:
         )
 
     @pytest.mark.django_db(transaction=True)
-    def test_comment_delete_by_author(self, user_client,
-                                      post, comment_2_post):
+    def test_comment_delete_by_author(self, user_client, post, comment_2_post):
         response = user_client.delete(
             f'/api/v1/posts/{post.id}/comments/{comment_2_post.id}/'
         )

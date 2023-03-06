@@ -9,22 +9,21 @@ def password():
 @pytest.fixture
 def user(django_user_model, password):
     return django_user_model.objects.create_user(
-        username='TestUser',
-        password=password
+        username='TestUser', password=password
     )
 
 
 @pytest.fixture
 def another_user(django_user_model, password):
     return django_user_model.objects.create_user(
-        username='TestUser2',
-        password=password
+        username='TestUser2', password=password
     )
 
 
 @pytest.fixture
 def token(user):
     from rest_framework.authtoken.models import Token
+
     token, _ = Token.objects.get_or_create(user=user)
     return token.key
 

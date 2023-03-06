@@ -6,7 +6,6 @@ from posts.models import Group, Post
 
 
 class TestGroupAPI:
-
     @pytest.mark.django_db(transaction=True)
     def test_group_not_found(self, client, group_1):
         response = client.get('/api/v1/groups/')
