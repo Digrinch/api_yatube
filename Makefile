@@ -1,5 +1,4 @@
 WORKDIR = yatube_api
-TEMPLATES-DIR = $(WORKDIR)/templates
 MANAGE = python $(WORKDIR)/manage.py
 
 style:
@@ -7,3 +6,6 @@ style:
 	isort $(WORKDIR)
 	flake8 $(WORKDIR)
 	mypy $(WORKDIR)
+
+run:
+	$(MANAGE) runserver

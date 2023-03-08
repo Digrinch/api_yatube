@@ -32,7 +32,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'yatube_api.urls'
+
 TEMPLATES_DIR = BASE_DIR / 'templates'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -57,6 +59,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     },
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -85,8 +89,6 @@ REST_FRAMEWORK = {
 LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
-
-USE_I18N = True
 
 USE_L10N = True
 
